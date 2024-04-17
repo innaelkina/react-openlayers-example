@@ -7,13 +7,14 @@ import TileLayer from "ol/layer/Tile";
 import XYZ from 'ol/source/XYZ';
 import './sidebar.css';
 import { fromLonLat } from "ol/proj";
-import { Coordinate } from "ol/coordinate";
+import { Coordinate, createStringXY } from "ol/coordinate";
 import Style from "ol/style/Style";
 import Icon from "ol/style/Icon";
 import Vector from "ol/layer/Vector";
 import SourceVector from "ol/source/Vector";
 import { LineString, Point } from "ol/geom";
 import Stroke from "ol/style/Stroke";
+import MousePosition from "ol/control/MousePosition";
 
 
 const london = fromLonLat([-0.12755, 51.507222]);
@@ -25,7 +26,7 @@ export function useMap() {
     mapRef.current = map;
     mapRef.current.addLayer(new TileLayer({
       source: new XYZ({
-        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+        url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' // http://192.168.2.148/osm/{z}/{x}/{y}.png
       })
     }));
     AddMarker();
@@ -37,6 +38,15 @@ export function useMap() {
 const iconFeature = new Feature({
   geometry: new Point(london),
   name: 'Somewhere near Nottingham',
+});
+
+const mousePosition = new MousePosition({
+  coordinateFormat: createStringXY(4),
+  projection: 'EPSG:4326',
+  // comment the following two lines to have the mouse position
+  // be placed within the map.
+  // className: 'custom-mouse-position',
+  // target: document.getElementById('mouse-position'),
 });
 
 function AddMarker() {
@@ -57,6 +67,8 @@ function AddMarker() {
   
   var marker = new Feature(new Point(moscow));
   markers.getSource()?.addFeature(marker);
+
+  map.addControl(mousePosition);
 }
 
 function AddLine() {
@@ -157,7 +169,7 @@ export default function App() {
     if (sattellite)
       map.addLayer(new TileLayer({
         source: new XYZ({
-          url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png'
+          url: 'https://tile.openstreetmap.org/{z}/{x}/{y}.png' // http://192.168.2.148/osm/{z}/{x}/{y}.png
         })
       }));
     else
